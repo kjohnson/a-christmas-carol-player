@@ -11,9 +11,11 @@ export default defineConfig({
             fonts: [
                 bunny('Instrument Sans', {
                     weights: [400, 500, 600],
+                    optimizedFallbacks: false,
                 }),
                 bunny('IM Fell English', {
                     weights: [400],
+                    optimizedFallbacks: false,
                 }),
             ],
         }),

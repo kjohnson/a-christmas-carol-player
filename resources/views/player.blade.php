@@ -23,6 +23,7 @@
         <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
         <link rel="preload" as="image" href="{{ $book['cover'] }}">
 
+        @fonts
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="min-h-dvh bg-claret-950 text-snow-50 antialiased select-none">
