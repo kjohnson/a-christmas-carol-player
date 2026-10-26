@@ -1,0 +1,293 @@
+@import 'tailwindcss';
+
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --font-display: 'IM Fell English', ui-serif, Georgia, serif;
+
+    /* Christmas Eve in Scrooge's chambers: claret, mulled wine and the dark behind the fire. */
+    --color-claret-950: #1a0b0e;
+    --color-claret-900: #261216;
+    --color-claret-800: #381b20;
+
+    /* Snow on the London rooftops, warmed by the fire. */
+    --color-snow-50: #fbf7f0;
+    --color-snow-200: #efe5d8;
+    --color-snow-300: #e0d0bd;
+    --color-snow-400: #bea894;
+    --color-snow-500: #8f7b6b;
+
+    /* Scrooge's candle. */
+    --color-candle-400: #f6cd6e;
+    --color-candle-500: #ecb444;
+}
+
+@layer base {
+    html {
+        -webkit-tap-highlight-color: transparent;
+        overscroll-behavior: none;
+    }
+}
+
+@layer components {
+    .tap {
+        @apply cursor-pointer transition active:scale-95 disabled:opacity-30 disabled:active:scale-100;
+        touch-action: manipulation;
+    }
+
+    .tap:focus-visible {
+        @apply outline-2 outline-offset-2 outline-candle-400;
+    }
+
+    .chapter-item:has(> .chapter-row[aria-current='true']) {
+        @apply bg-white/8;
+    }
+
+    .chapter-row[aria-current='true'] .chapter-number {
+        @apply bg-candle-500 text-claret-950;
+    }
+
+    .chapter-item:has([aria-expanded='true']) {
+        @apply bg-white/5;
+    }
+
+    .chapter-item:has([aria-expanded='true']) [data-chapter-options] {
+        @apply text-snow-50;
+    }
+
+    /* Range input styled as a progress bar with a thumb. */
+    .scrubber {
+        --progress: 0%;
+        --buffered: 0%;
+        @apply block h-8 w-full cursor-pointer appearance-none bg-transparent;
+        touch-action: none;
+    }
+
+    .scrubber::-webkit-slider-runnable-track {
+        @apply h-1.5 rounded-full;
+        background: linear-gradient(
+            to right,
+            var(--color-candle-500) var(--progress),
+            rgb(255 255 255 / 0.25) var(--progress) var(--buffered),
+            rgb(255 255 255 / 0.12) var(--buffered)
+        );
+    }
+
+    .scrubber::-moz-range-track {
+        @apply h-1.5 rounded-full;
+        background: linear-gradient(
+            to right,
+            var(--color-candle-500) var(--progress),
+            rgb(255 255 255 / 0.25) var(--progress) var(--buffered),
+            rgb(255 255 255 / 0.12) var(--buffered)
+        );
+    }
+
+    .scrubber::-webkit-slider-thumb {
+        @apply -mt-[5px] size-4 appearance-none rounded-full border-0 bg-snow-50 shadow;
+    }
+
+    .scrubber::-moz-range-thumb {
+        @apply size-4 rounded-full border-0 bg-snow-50 shadow;
+    }
+
+    .scrubber:focus-visible {
+        @apply outline-none;
+    }
+
+    .scrubber:focus-visible::-webkit-slider-thumb {
+        @apply ring-4 ring-candle-400/50;
+    }
+
+    /* Bottom sheet built on <dialog>. */
+    .sheet {
+        @apply m-0 mt-auto h-[80dvh] max-h-[80dvh] w-full max-w-none overflow-y-auto rounded-t-3xl bg-claret-900 text-snow-50 ring-1 ring-white/10;
+        transform: translateY(100%);
+        transition:
+            transform 0.25s ease-out,
+            overlay 0.25s allow-discrete,
+            display 0.25s allow-discrete;
+    }
+
+    .sheet[open] {
+        transform: translateY(0);
+
+        @starting-style {
+            transform: translateY(100%);
+        }
+    }
+
+    .sheet::backdrop {
+        background: rgb(0 0 0 / 0);
+        transition:
+            background 0.25s,
+            overlay 0.25s allow-discrete,
+            display 0.25s allow-discrete;
+    }
+
+    .sheet[open]::backdrop {
+        background: rgb(0 0 0 / 0.6);
+
+        @starting-style {
+            background: rgb(0 0 0 / 0);
+        }
+    }
+}
+
+@layer components {
+    .reader-toggle:not(.hidden) {
+        @apply flex;
+    }
+
+    .reader-toggle[aria-pressed='true'] {
+        @apply bg-candle-500/15 text-candle-400;
+    }
+
+    /* Reading view: the player fills the screen and the text scrolls inside it. */
+    #player[data-reading] {
+        @apply h-dvh;
+    }
+
+    .reader {
+        --reader-size: 1.125rem;
+        @apply relative h-full overflow-y-auto px-6 pt-12 pb-6 font-serif leading-relaxed text-snow-200/80 select-text;
+        font-size: var(--reader-size);
+        mask-image: linear-gradient(to bottom, transparent 1rem, black 3rem, black calc(100% - 2.5rem), transparent);
+        overscroll-behavior: contain;
+    }
+
+    .reader > * {
+        @apply mx-auto max-w-prose;
+    }
+
+    .reader p + p {
+        @apply mt-4;
+    }
+
+    .reader h2 {
+        @apply mb-6 font-display text-snow-50;
+        font-size: 1.3em;
+    }
+
+    .reader h2 + h2 {
+        @apply -mt-4;
+    }
+
+    .reader .reader-quote {
+        @apply pl-4 italic;
+    }
+
+    .reader .reader-quote + .reader-quote {
+        @apply mt-2;
+    }
+
+    .reader .reader-break {
+        @apply my-8 text-center tracking-[0.5em] text-snow-500;
+    }
+
+    .reader .reader-status {
+        @apply py-12 text-center font-sans text-sm text-snow-400;
+    }
+
+    .reader [data-w] {
+        @apply cursor-pointer rounded-sm transition-colors duration-300;
+    }
+
+    .reader .is-current-block {
+        @apply text-snow-50;
+    }
+
+    .reader [data-w].is-current {
+        @apply bg-candle-500/10 text-candle-400;
+    }
+
+    /* A− / A+ in the top corner of the text, where scrolled lines have faded out. */
+    .reader-size {
+        @apply absolute top-1 right-4 z-10 flex items-center rounded-full bg-claret-800 text-snow-200 ring-1 ring-white/10;
+    }
+
+    /*
+     * "Back to 4:32" after jumping with the scrubber or a word, just above its
+     * marker on the track. The player sets "left" so it stays on screen.
+     */
+    .return-point {
+        @apply absolute top-0.5 z-10 -translate-x-1/2 -translate-y-full items-center gap-1 rounded-full bg-claret-800 px-3 py-1.5 text-xs font-semibold text-candle-400 tabular-nums shadow-lg ring-1 ring-white/10;
+    }
+
+    .return-point:not(.hidden) {
+        @apply flex;
+    }
+
+    /*
+     * The same spot as a tick on the scrubber track. --at is 0–1 along the
+     * track; the thumb is 1rem wide, so its centre runs from 0.5rem to 100% - 0.5rem.
+     */
+    .return-marker {
+        --at: 0;
+        @apply absolute top-4 flex size-6 -translate-x-1/2 -translate-y-1/2 cursor-pointer items-center justify-center;
+        left: calc(0.5rem + (100% - 1rem) * var(--at));
+    }
+
+    .return-marker::before {
+        content: '';
+        @apply h-3.5 w-1 rounded-full bg-candle-400 ring-2 ring-claret-950;
+    }
+
+    .return-marker.hidden {
+        @apply hidden;
+    }
+
+    .reader-follow {
+        @apply absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-1.5 rounded-full bg-claret-800 px-4 py-2 text-sm font-semibold text-candle-400 shadow-lg ring-1 ring-white/10;
+    }
+
+    .reader-follow:not(.hidden) {
+        @apply flex;
+    }
+}
+
+@layer components {
+    /*
+     * Two drifts of snow, tiled from radial gradients and slowly falling. Hidden
+     * while reading, and still for anyone who'd rather not see motion.
+     */
+    .snow::before,
+    .snow::after {
+        --tile: 200px;
+        content: '';
+        @apply absolute inset-x-0 -top-80 bottom-0;
+        background-image:
+            radial-gradient(circle at 20% 30%, rgb(255 255 255 / 0.5) 0 1.5px, transparent 2px),
+            radial-gradient(circle at 70% 60%, rgb(255 255 255 / 0.35) 0 1px, transparent 1.5px),
+            radial-gradient(circle at 45% 85%, rgb(255 255 255 / 0.4) 0 1.25px, transparent 1.75px);
+        background-size: var(--tile) var(--tile);
+        animation: snowfall 24s linear infinite;
+    }
+
+    /* Each drift falls exactly one tile per loop, so it never jumps. */
+    .snow::after {
+        --tile: 320px;
+        opacity: 0.6;
+        animation-duration: 48s;
+    }
+
+    body:has(#player[data-reading]) .snow {
+        @apply hidden;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .snow::before,
+        .snow::after {
+            animation: none;
+        }
+    }
+}
+
+@keyframes snowfall {
+    to {
+        transform: translate3d(0, var(--tile), 0);
+    }
+}
